@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import UserModel from "../../models/User";
 import loginSchema from "../../schemas/loginSchema";
-import { signJWT } from "../../utils/jwt.utils";
+import { signJWT, signRefreshJWT } from "../../utils/jwt.utils";
 import bcrypt from "bcrypt";
 import { sendValidationError, sendErrorResponse, sendSuccessResponse, ERROR_MESSAGES } from "../../utils/errorResponse";
 
@@ -18,8 +18,38 @@ const login = async (req: Request, res: Response) => {
         if (!isPasswordValid) {
             return sendErrorResponse(res, "Invalid email or password", 400);
         }
-        const token = signJWT({email: user.email,role: user.role,id:user._id});
-        return sendSuccessResponse(res, { token });
+        
+        const payload = { email: user.email, role: user.role, id: user._id };
+        const token = signJWT(payload);
+        const refreshToken = signRefreshJWT(payload);
+        
+        // Set cookies
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            path: '/',
+        });
+        
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
+            path: '/',
+        });
+        
+        return sendSuccessResponse(res, { 
+            token,
+            refreshToken,
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+            }
+        });
     }
     catch (error) {
         if (error instanceof z.ZodError) {

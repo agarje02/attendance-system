@@ -1,0 +1,5 @@
+--so first feature i am building is user can create an account and then start a class 
+--- in that class i user can add students and take attendance , store the data
+--- also in the class user can able to attach pdfs videos and images
+--- later we need to give a feature where user should able to create mcq, quiz question, games on perticular syllbus with ai
+--- user can print that mcq questions

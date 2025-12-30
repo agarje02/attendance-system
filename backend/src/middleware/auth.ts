@@ -8,14 +8,18 @@ const authMiddleware = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const token = req.headers.authorization;
+    // Try to get token from cookie first, then from Authorization header
+    const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+    
     if (!token) {
       return sendUnauthorizedError(res);
     }
-    const decode =  verifyJWT(token);
+    
+    const decode = verifyJWT(token);
     if (!decode) {
       return sendUnauthorizedError(res);
     }
+    
     console.log("verified");
     // @ts-ignore
     req.user = decode;

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import UserModel from "../../models/User";
 import { signJWT, signRefreshJWT } from "../../utils/jwt.utils";
 import { sendErrorResponse, sendSuccessResponse } from "../../utils/errorResponse";
+import { prisma } from "../../config/database";
 
 const signUpWithGoogle = async (req: Request, res: Response) => {
     try {
@@ -12,7 +12,7 @@ const signUpWithGoogle = async (req: Request, res: Response) => {
         }
         
         // Check if user already exists
-        let user = await UserModel.findOne({ email });
+        let user = await prisma.user.findUnique({ where: { email } });
         
         if (!user) {
             // Create new user with Google auth
@@ -23,15 +23,16 @@ const signUpWithGoogle = async (req: Request, res: Response) => {
             const hashedPassword = await bcrypt.hash(randomPassword, 10);
             
             // Default role to 'student' - you can change this logic
-            user = await UserModel.create({
-                name,
-                email,
-                password: hashedPassword,
-                role: 'student', // Default role, adjust as needed
+            user = await prisma.user.create({
+                data: {
+                    fullName: name,
+                    email,
+                    passwordHash: hashedPassword,
+                }
             });
         }
         
-        const payload = { email: user.email, role: user.role, id: user._id };
+        const payload = { email: user.email, id: user.id };
         const token = signJWT(payload);
         const refreshToken = signRefreshJWT(payload);
         
@@ -56,10 +57,9 @@ const signUpWithGoogle = async (req: Request, res: Response) => {
             token,
             refreshToken,
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
-                name: user.name,
-                role: user.role,
+                fullName: user.fullName,
             }
         });
     } catch (error) {

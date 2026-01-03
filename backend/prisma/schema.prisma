@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ManagedUserRole {
+  teacher
+  student
+}
+
+enum ClassMemberRole {
+  teacher
+  student
+}
+
+enum ClassMemberStatus {
+  pending
+  approved
+}
+
+model User {
+  id          String         @id @default(uuid())
+  email       String?        @unique
+  passwordHash String?
+  fullName    String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  managedUsers  ManagedUser[] @relation("OwnerManagedUsers")
+  schools       School[]
+  classesOwned  Class[]       @relation("ClassOwner")
+  teachingSessions ClassSession[] @relation("OwnerTeacherSessions")
+}
+
+model ManagedUser {
+  id            String           @id @default(uuid())
+  ownerId       String
+  owner         User             @relation("OwnerManagedUsers", fields: [ownerId], references: [id], onDelete: Cascade)
+  username      String           @unique
+  passwordHash  String?
+  role          ManagedUserRole
+  departmentId  String?          
+  department    Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  classMemberships ClassMember[]
+  teachingSessions ClassSession[] @relation("TeacherSessions")
+
+  @@index([ownerId])
+  @@index([departmentId])
+  @@index([role])
+}
+
+model School {
+  id          String       @id @default(uuid())
+  ownerId     String
+  owner       User         @relation(fields: [ownerId], references: [id])
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  departments Department[]
+
+  @@unique([ownerId, name])
+  @@index([ownerId])
+}
+
+model Department {
+  id          String      @id @default(uuid())
+  schoolId    String
+  school      School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  managedUsers ManagedUser[]
+  classes      Class[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+}
+
+model Class {
+  id            String       @id @default(uuid())
+  ownerId       String
+  owner         User         @relation("ClassOwner", fields: [ownerId], references: [id])
+  departmentId  String?
+  department    Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  className     String
+  description   String?
+  resources     Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  members   ClassMember[]
+  sessions  ClassSession[]
+
+  @@index([ownerId])
+  @@index([departmentId])
+  @@index([ownerId, className])
+}
+
+model ClassMember {
+  classId    String
+  userId     String
+  role       ClassMemberRole
+  status     ClassMemberStatus
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  class      Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user       ManagedUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([classId, userId])
+  @@index([classId])
+  @@index([userId])
+  @@index([classId, status])
+}
+
+model ClassSession {
+  id             String        @id @default(uuid())
+  classId        String
+  class          Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacherId      String?
+  teacher        ManagedUser?  @relation("TeacherSessions", fields: [teacherId], references: [id], onDelete: SetNull)
+  ownerTeacherId String?
+  ownerTeacher   User?         @relation("OwnerTeacherSessions", fields: [ownerTeacherId], references: [id], onDelete: SetNull)
+  scheduledTime  DateTime
+  startTime      DateTime?
+  endTime        DateTime?
+  summary        String?
+  attendance     Json?
+  isFinalized    Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([classId])
+  @@index([teacherId])
+  @@index([ownerTeacherId])
+  @@index([classId, isFinalized])
+  @@index([scheduledTime])
+}

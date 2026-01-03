@@ -14,14 +14,16 @@ export const validateRequired = <T>(
 };
 
 /**
- * Validates that a class belongs to the teacher
+ * Validates that a class belongs to the user (owner or teacher member)
+ * Note: This function is deprecated. Use direct Prisma queries in route handlers instead.
+ * @deprecated Use direct ownership checks in route handlers
  */
 export const validateClassOwnership = (
-  classTeacherId: string,
+  classOwnerId: string,
   currentUserId: string
 ): string | null => {
-  if (classTeacherId != currentUserId) {
-    return "You are not authorized to start attendance for this class";
+  if (classOwnerId !== currentUserId) {
+    return "You are not authorized to perform this action on this class";
   }
   return null;
 };

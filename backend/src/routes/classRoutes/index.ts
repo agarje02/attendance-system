@@ -1,18 +1,24 @@
 import { Router } from "express";
 import authMiddleware from "../../middleware/auth";
 import createClass from "./createClass";
-import addStudent from "./addStudent";
 import getClass from "./getClass";
 import getMyAttendanceByClassId from "./getMyAttendanceByClassId";
 
 const router = Router();
 
-router.post("/", authMiddleware, createClass);
+// All class routes require authentication
+router.use(authMiddleware);
 
-router.post("/:id/add-student",authMiddleware,addStudent);
+// Class CRUD operations
+router.post("/", createClass); // Create a new class
+// TODO: router.get("/", listClasses); // List all classes for the authenticated user
+router.get("/:id", getClass); // Get a specific class
+// TODO: router.put("/:id", updateClass); // Update a class
+// TODO: router.delete("/:id", deleteClass); // Delete a class
 
-router.get("/:id",authMiddleware,getClass)
+// Class-specific routes
+router.get("/:id/my-attendance", getMyAttendanceByClassId); // Get my attendance for a class
 
-router.get("/:id/my-attendance",authMiddleware,getMyAttendanceByClassId);
+// Note: add-student route moved to /class-members endpoint
 
 export default router;

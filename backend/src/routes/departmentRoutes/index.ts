@@ -1,17 +1,22 @@
 import { Router } from "express";
 import authMiddleware from "../../middleware/auth";
+import listDepartments from "./listDepartments";
+import createDepartment from "./createDepartment";
+import getDepartment from "./getDepartment";
+import updateDepartment from "./updateDepartment";
+import deleteDepartment from "./deleteDepartment";
 
 const router = Router();
 
 // All department routes require authentication
 router.use(authMiddleware);
 
-// TODO: Implement department routes
-// GET /departments?schoolId=:schoolId - List departments for a school
-// POST /departments - Create a new department
-// GET /departments/:id - Get a specific department
-// PUT /departments/:id - Update a department
-// DELETE /departments/:id - Delete a department
+// Department CRUD operations
+router.get("/", listDepartments); // List departments (optionally filtered by schoolId query param)
+router.post("/", createDepartment); // Create a new department
+router.get("/:id", getDepartment); // Get a specific department
+router.put("/:id", updateDepartment); // Update a department
+router.delete("/:id", deleteDepartment); // Delete a department
 
 export default router;
 

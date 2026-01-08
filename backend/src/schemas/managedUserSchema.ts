@@ -9,6 +9,7 @@ export const managedUserCreateSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters').optional(),
     role: managedUserRoleSchema,
     departmentId: z.string().uuid().optional(),
+    classId: z.string().uuid().optional(), // Optional class to add user to directly
 });
 
 /**

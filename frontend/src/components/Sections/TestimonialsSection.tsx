@@ -20,12 +20,12 @@ export function TestimonialsSection() {
             Testimonials
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            Loved by{" "}
-            <span className="gradient-text">thousands of organizations</span>
+            Trusted by{" "}
+            <span className="gradient-text">schools & educators</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Don&apos;t just take our word for it. Here&apos;s what our customers have to
-            say about transforming their attendance management.
+            Don&apos;t just take our word for it. Here&apos;s what principals, teachers, 
+            and administrators say about transforming their school management.
           </p>
         </motion.div>
 

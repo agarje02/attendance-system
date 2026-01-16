@@ -16,8 +16,8 @@ export function Footer() {
             <div className="col-span-2 md:col-span-3 lg:col-span-2">
               <Logo className="mb-4" />
               <p className="text-muted-foreground mb-6 max-w-sm">
-                Making attendance management simple, intelligent, and delightful for
-                organizations of all sizes.
+                Complete school management platform. Track attendance, schedule timetables, 
+                and monitor student progress—all in one place.
               </p>
               
               {/* Contact Info */}

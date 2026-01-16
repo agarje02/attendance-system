@@ -19,18 +19,18 @@ export function AboutSection() {
               About Us
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-              Building the future of{" "}
-              <span className="gradient-text">workforce management</span>
+              Transforming{" "}
+              <span className="gradient-text">education management</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-6">
-              Founded in 2023, Attendify was born from a simple frustration: why is
-              tracking attendance still so complicated? We set out to create a
-              solution that&apos;s as easy as checking your phone.
+              Attendify was built with a vision: to give schools and organizations 
+              a modern, intuitive platform to manage attendance, track progress, 
+              and schedule activities—all in one place.
             </p>
             <p className="text-muted-foreground mb-8">
-              Today, thousands of organizations trust Attendify to manage their
-              attendance seamlessly. From schools and universities to Fortune 500
-              companies, we&apos;re proud to power the future of work.
+              Today, hundreds of schools trust Attendify to manage their daily operations. 
+              From small coaching centers to large universities, we help educators focus 
+              on what matters most—teaching and student success.
             </p>
 
             {/* Stats */}

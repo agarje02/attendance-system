@@ -11,19 +11,19 @@ export interface RecentActivity {
 }
 
 export const dashboardStats: DashboardStat[] = [
-  { label: "Present", value: "156", color: "success" },
-  { label: "Late", value: "12", color: "primary" },
-  { label: "Absent", value: "8", color: "muted" },
+  { label: "Students Present", value: "234", color: "success" },
+  { label: "Classes Today", value: "18", color: "primary" },
+  { label: "Teachers Active", value: "12", color: "muted" },
 ];
 
 export const recentActivity: RecentActivity[] = [
-  { name: "Sarah Johnson", time: "Just now", status: "checked in" },
-  { name: "Mike Chen", time: "2m ago", status: "checked in" },
-  { name: "Emma Wilson", time: "5m ago", status: "checked in" },
+  { name: "Class 10-A", time: "Just now", status: "session started" },
+  { name: "Mrs. Sharma", time: "2m ago", status: "marked attendance" },
+  { name: "Class 8-B", time: "5m ago", status: "session ended" },
 ];
 
 export const socialProof = {
-  count: "2,000+",
-  text: "organizations trust us",
+  count: "500+",
+  text: "schools trust us",
   avatarCount: 5,
 };

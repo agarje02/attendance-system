@@ -22,9 +22,9 @@ export const footerLinks: Record<string, FooterSection> = {
     links: [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Integrations", href: "#" },
-      { label: "API", href: "#" },
-      { label: "Changelog", href: "#" },
+      { label: "For Schools", href: "#" },
+      { label: "For Universities", href: "#" },
+      { label: "For Organizations", href: "#" },
     ],
   },
   company: {
@@ -33,7 +33,7 @@ export const footerLinks: Record<string, FooterSection> = {
       { label: "About", href: "#about" },
       { label: "Blog", href: "#" },
       { label: "Careers", href: "#" },
-      { label: "Press", href: "#" },
+      { label: "Contact", href: "#" },
       { label: "Partners", href: "#" },
     ],
   },
@@ -43,7 +43,7 @@ export const footerLinks: Record<string, FooterSection> = {
       { label: "Documentation", href: "#" },
       { label: "Help Center", href: "#" },
       { label: "Community", href: "#" },
-      { label: "Templates", href: "#" },
+      { label: "Guides", href: "#" },
       { label: "Webinars", href: "#" },
     ],
   },
@@ -53,7 +53,7 @@ export const footerLinks: Record<string, FooterSection> = {
       { label: "Privacy Policy", href: "#" },
       { label: "Terms of Service", href: "#" },
       { label: "Cookie Policy", href: "#" },
-      { label: "GDPR", href: "#" },
+      { label: "Data Protection", href: "#" },
       { label: "Security", href: "#" },
     ],
   },
@@ -67,7 +67,7 @@ export const socialLinks: SocialLink[] = [
 ];
 
 export const contactInfo = {
-  email: "hello@attendify.com",
-  phone: "+1 (555) 123-4567",
-  address: "San Francisco, CA",
+  email: "hello@attendify.io",
+  phone: "+91 (800) 123-4567",
+  address: "Mumbai, India",
 };

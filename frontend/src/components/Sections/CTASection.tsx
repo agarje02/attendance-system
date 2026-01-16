@@ -42,7 +42,7 @@ export function CTASection() {
               transition={{ delay: 0.3 }}
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6"
             >
-              Ready to transform your attendance management?
+              Ready to modernize your school management?
             </motion.h2>
 
             {/* Subtitle */}
@@ -54,7 +54,7 @@ export function CTASection() {
               className="text-lg text-white/80 mb-8"
             >
               Start your 14-day free trial today. No credit card required. 
-              Cancel anytime. Join 2,000+ organizations already using Attendify.
+              Cancel anytime. Join 500+ schools already using Attendify.
             </motion.p>
 
             {/* Pricing highlight */}
@@ -70,21 +70,21 @@ export function CTASection() {
                 <p className="text-3xl font-bold text-white">
                   $19<span className="text-lg font-normal">/month</span>
                 </p>
-                <p className="text-sm text-white/80">per 100 users</p>
+                <p className="text-sm text-white/80">per 100 students</p>
               </div>
               <div className="text-left">
                 <ul className="space-y-2 text-white/90 text-sm">
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                    Unlimited check-ins
+                    Unlimited classes & teachers
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                    Real-time analytics
+                    Timetable & attendance tracking
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                    24/7 support
+                    Progress reports & analytics
                   </li>
                 </ul>
               </div>
@@ -108,7 +108,7 @@ export function CTASection() {
               <Button
                 variant="outline"
                 size="xl"
-                className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
+                className="border-white/30 text-primary hover:text-white hover:bg-white/10 hover:border-white/50"
               >
                 Talk to Sales
               </Button>

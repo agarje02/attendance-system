@@ -5,6 +5,7 @@ import authMiddleware from "../../middleware/auth";
 import me from "./me";
 import signUpWithGoogle from "./signUpWithGoogle";
 import refresh from "./refresh";
+import logout from "./logout";
 
 const router = Router();
 
@@ -13,4 +14,5 @@ router.post("/login", login);
 router.get("/me", authMiddleware, me);
 router.post("/signup-with-google", signUpWithGoogle);
 router.post("/refresh", refresh);
+router.post("/logout", logout);
 export default router;

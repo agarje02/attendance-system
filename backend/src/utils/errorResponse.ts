@@ -32,6 +32,8 @@ export const ERROR_MESSAGES = {
   NOT_FOUND_CLASS: "Class not found",
   NOT_FOUND_USER: "User not found",
   NOT_FOUND_STUDENT: "Student not found",
+  NOT_FOUND_SESSION: "Session not found",
+  SESSION_ALREADY_FINALIZED: "Session is already finalized and cannot be modified",
 } as const;
 
 /**
@@ -101,6 +103,26 @@ export const sendNotFoundStudentError = (res: Response): Response => {
   return res.status(404).json({
     success: false,
     error: ERROR_MESSAGES.NOT_FOUND_STUDENT,
+  });
+};
+
+/**
+ * Send not found error response for session (404)
+ */
+export const sendNotFoundSessionError = (res: Response): Response => {
+  return res.status(404).json({
+    success: false,
+    error: ERROR_MESSAGES.NOT_FOUND_SESSION,
+  });
+};
+
+/**
+ * Send error response for finalized session (400)
+ */
+export const sendSessionFinalizedError = (res: Response): Response => {
+  return res.status(400).json({
+    success: false,
+    error: ERROR_MESSAGES.SESSION_ALREADY_FINALIZED,
   });
 };
 

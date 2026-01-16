@@ -6,10 +6,21 @@ export interface LoginCredentials {
 }
 
 export interface SignupCredentials {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
-  role: "teacher" | "student";
+}
+
+export interface SignupResponse {
+  success: boolean;
+  data?: {
+    id: string;
+    email: string;
+    fullName: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  error?: string;
 }
 
 export interface GoogleAuthResponse {
@@ -23,7 +34,7 @@ export interface AuthResponse {
   refreshToken?: string;
 }
 
-export async function signup(credentials: SignupCredentials): Promise<void> {
+export async function signup(credentials: SignupCredentials): Promise<SignupResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/signup`, {
     method: 'POST',
     headers: {
@@ -33,12 +44,12 @@ export async function signup(credentials: SignupCredentials): Promise<void> {
     body: JSON.stringify(credentials),
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || error.message || 'Signup failed');
+  const data: SignupResponse = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || 'Signup failed');
   }
 
-  const data = await response.json();
   return data;
 }
 
@@ -93,3 +104,15 @@ export async function getCurrentUser(): Promise<any> {
   return response.json();
 }
 
+export async function logout(): Promise<void> {
+  try {
+    // Call logout endpoint if it exists (optional)
+    await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (error) {
+    // Ignore errors if logout endpoint doesn't exist
+    // Cookies will be cleared on the client side
+  }
+}

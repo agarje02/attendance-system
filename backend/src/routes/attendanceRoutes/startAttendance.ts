@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 import { activeSession } from "../../global";
 import { prisma } from "../../config/database";
 import { startAttendanceSchema } from "../../schemas/attendanceSchema";

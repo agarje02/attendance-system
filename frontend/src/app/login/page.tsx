@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { loginWithEmail, loginWithGoogle } from "@/lib/api";
@@ -38,6 +38,7 @@ declare global {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +79,9 @@ export default function LoginPage() {
                   picture: userData.picture,
                 });
 
-                router.push("/");
+                // Get redirect URL from query params or default to dashboard
+                const redirectUrl = searchParams.get('redirect') || '/dashboard';
+                router.push(redirectUrl);
                 router.refresh();
               } catch (err: any) {
                 setError(err.message || "Google login failed. Please try again.");
@@ -109,7 +112,9 @@ export default function LoginPage() {
 
     try {
       await loginWithEmail({ email, password });
-      router.push("/");
+      // Get redirect URL from query params or default to dashboard
+      const redirectUrl = searchParams.get('redirect') || '/dashboard';
+      router.push(redirectUrl);
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");

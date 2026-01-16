@@ -33,8 +33,17 @@ export const classSessionUpdateSchema = z.object({
  * Schema for marking attendance in a session
  */
 export const markAttendanceSchema = z.object({
-  sessionId: z.string().uuid("Invalid session ID format"),
   attendance: z.record(z.string().uuid(), z.enum(['present', 'absent', 'late'])), // userId -> status
+});
+
+/**
+ * Schema for querying sessions (filters)
+ */
+export const getSessionsQuerySchema = z.object({
+  classId: z.string().uuid("Invalid class ID format").optional(),
+  isFinalized: z.string().transform((val) => val === 'true').optional(),
+  teacherId: z.string().uuid("Invalid teacher ID format").optional(),
+  ownerTeacherId: z.string().uuid("Invalid owner teacher ID format").optional(),
 });
 
 /**

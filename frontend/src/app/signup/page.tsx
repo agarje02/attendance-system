@@ -3,29 +3,49 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, User, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signup } from "@/lib/api";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
+import { SuccessDialog } from "@/components/SuccessDialog";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"teacher" | "student">("student");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [savedCredentials, setSavedCredentials] = useState<{ email: string; password: string } | null>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await signup({ name, email, password, role });
-      router.push("/login");
+      await signup({ fullName, email, password });
+      // Save credentials for auto-login option
+      setSavedCredentials({ email, password });
+      // Show success dialog instead of redirecting
+      setShowSuccessDialog(true);
+      // Clear form
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (err: any) {
       setError(err.message || "Signup failed. Please try again.");
     } finally {
@@ -128,7 +148,7 @@ export default function SignupPage() {
             {/* Name Input */}
             <div>
               <label
-                htmlFor="name"
+                htmlFor="fullName"
                 className="block text-sm font-medium text-foreground mb-2"
               >
                 Full Name
@@ -136,10 +156,10 @@ export default function SignupPage() {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
-                  id="name"
+                  id="fullName"
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
                   placeholder="John Doe"
@@ -181,56 +201,63 @@ export default function SignupPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
+                  className="w-full pl-10 pr-12 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Must be at least 6 characters
               </p>
             </div>
 
-            {/* Role Selection */}
+            {/* Confirm Password Input */}
             <div>
               <label
-                htmlFor="role"
+                htmlFor="confirmPassword"
                 className="block text-sm font-medium text-foreground mb-2"
               >
-                I am a
+                Confirm Password
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full pl-10 pr-12 py-3 border-2 border-border rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
+                  placeholder="••••••••"
+                />
                 <button
                   type="button"
-                  onClick={() => setRole("student")}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    role === "student"
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-border hover:border-primary/40"
-                  }`}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
-                  <div className="font-medium">Student</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Track your attendance
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("teacher")}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    role === "teacher"
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
-                  <div className="font-medium">Teacher</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Manage classes
-                  </div>
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -265,6 +292,16 @@ export default function SignupPage() {
           </p>
         </div>
       </motion.div>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        open={showSuccessDialog}
+        onOpenChange={setShowSuccessDialog}
+        title="Account Created Successfully!"
+        description="Your account has been created successfully. You can now login with your credentials or continue browsing."
+        email={savedCredentials?.email}
+        password={savedCredentials?.password}
+      />
     </div>
   );
 }

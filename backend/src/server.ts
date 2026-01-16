@@ -5,6 +5,7 @@ dotenv.config();
 import express from "express";
 import router from "./routes";
 // import {connectDB} from "./config/database";
+import { connectRedis } from "./config/redis";
 import { initializeWebSocket } from "./websocket";
 import cookieParser from "cookie-parser";
 
@@ -44,8 +45,9 @@ app.get("/api/test", (req, res) => {
 const startServer = async () => {
   try {
     // await connectDB();
-   const server = app.listen(process.env.PORT || 8000, () => {
-      console.log("Server is running on port 8000");
+    await connectRedis();
+    const server = app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running on port ${process.env.PORT || 8000}`);
     });
     initializeWebSocket(server);
   } catch (error) {

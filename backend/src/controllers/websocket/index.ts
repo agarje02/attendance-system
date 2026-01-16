@@ -4,6 +4,8 @@ import { activeSession } from "../../global";
 import { prisma } from "../../config/database";
 import { sendWSUnauthorizedErrorToClient, sendWSNoActiveSessionErrorToClient, sendWSClassNotFoundErrorToClient, sendWSInternalErrorToClient, sendWSForbiddenTeacherErrorToClient, sendWSForbiddenStudentErrorToClient, sendWSCustomErrorToClient } from "../../utils/websocketError";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 const handleIncomingMessage = async (wss: WebSocketServer, ws: WebSocket, msg: EVENTS) => {
     console.log("Message received:", msg.toString());
     // @ts-ignore
@@ -73,7 +75,7 @@ const userHasAccessToClass = async (user: any, classData: any) => {
     const userManagedUsers = await prisma.managedUser.findMany({
         where: { ownerId: user.id }
     });
-    const managedUserIds = userManagedUsers.map(mu => mu.id);
+    const managedUserIds = userManagedUsers.map((mu: ManagedUser) => mu.id);
     const isMember = classData.members.some(
         (member: any) => managedUserIds.includes(member.userId)    
     );
@@ -180,7 +182,7 @@ const handleMyAttendance = async (wss: WebSocketServer, ws: WebSocket, msg: MY_A
         }
         // Get attendance for all managed student users
         const attendanceStatuses: Record<string, string> = {};
-        managedStudents.forEach(student => {
+        managedStudents.forEach((student: ManagedUser) => {
             attendanceStatuses[student.id] = activeSession.attendance[student.id] || 'not yet updated';
         });
         // Send only to the requesting client (unicast)

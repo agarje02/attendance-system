@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastProvider } from "@/components/ToastProvider";
+import { CookiesProviderWrapper } from "@/components/CookiesProviderWrapper";
 
 export const metadata: Metadata = {
   title: "Attendify - Smart Attendance Management System",
@@ -37,7 +39,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+        <CookiesProviderWrapper>
+            {children}
+            <ToastProvider />
+        </CookiesProviderWrapper>
       </body>
     </html>
   );

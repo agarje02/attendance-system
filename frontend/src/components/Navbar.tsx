@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store/useStore";
 import { navLinks } from "@/data/navigation";
+import Link from "next/link";
 
 export function Navbar() {
   const { isScrolled, setScrolled, isMenuOpen, toggleMenu, setMenuOpen } = useStore();
@@ -63,7 +64,9 @@ export function Navbar() {
             <Button variant="ghost" size="sm" asChild>
               <a href="/login">Log in</a>
             </Button>
-            <Button size="sm">Get Started</Button>
+            <Button size="sm" asChild>
+              <Link href="/signup">Get Started</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -109,7 +112,9 @@ export function Navbar() {
                 <Button variant="outline" className="w-full" asChild>
                   <a href="/login">Log in</a>
                 </Button>
-                <Button className="w-full">Get Started</Button>
+                <Button className="w-full"  asChild>
+                  <Link href="/signup">Get Started</Link>
+                </Button>
               </div>
             </div>
           </motion.div>

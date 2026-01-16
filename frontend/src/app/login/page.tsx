@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { loginWithEmail, loginWithGoogle } from "@/lib/api";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
+import { useUserStore } from "@/store/userStore";
 
 declare global {
   interface Window {
@@ -39,71 +40,72 @@ declare global {
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { fetchUser } = useUserStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  useEffect(() => {
-    // Load Google Sign-In script on mount
-    if (typeof window !== "undefined" && !window.google) {
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
+  // useEffect(() => {
+  //   // Load Google Sign-In script on mount
+  //   if (typeof window !== "undefined" && !window.google) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://accounts.google.com/gsi/client";
+  //     script.async = true;
+  //     script.defer = true;
+  //     document.head.appendChild(script);
 
-      script.onload = () => {
-        // Initialize Google Sign-In when script loads
-        if (window.google && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
-          window.google.accounts.id.initialize({
-            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-            callback: async (response: { credential: string }) => {
-              try {
-                setIsGoogleLoading(true);
-                // Decode JWT token to get user info
-                const base64Url = response.credential.split(".")[1];
-                const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-                const jsonPayload = decodeURIComponent(
-                  atob(base64)
-                    .split("")
-                    .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-                    .join("")
-                );
-                const userData = JSON.parse(jsonPayload);
+  //     script.onload = () => {
+  //       // Initialize Google Sign-In when script loads
+  //       if (window.google && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
+  //         window.google.accounts.id.initialize({
+  //           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  //           callback: async (response: { credential: string }) => {
+  //             try {
+  //               setIsGoogleLoading(true);
+  //               // Decode JWT token to get user info
+  //               const base64Url = response.credential.split(".")[1];
+  //               const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  //               const jsonPayload = decodeURIComponent(
+  //                 atob(base64)
+  //                   .split("")
+  //                   .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+  //                   .join("")
+  //               );
+  //               const userData = JSON.parse(jsonPayload);
 
-                await loginWithGoogle({
-                  email: userData.email,
-                  name: userData.name,
-                  picture: userData.picture,
-                });
+  //               await loginWithGoogle({
+  //                 email: userData.email,
+  //                 name: userData.name,
+  //                 picture: userData.picture,
+  //               });
 
-                // Get redirect URL from query params or default to dashboard
-                const redirectUrl = searchParams.get('redirect') || '/dashboard';
-                router.push(redirectUrl);
-                router.refresh();
-              } catch (err: any) {
-                setError(err.message || "Google login failed. Please try again.");
-                setIsGoogleLoading(false);
-              }
-            },
-          });
+  //               // Get redirect URL from query params or default to dashboard
+  //               const redirectUrl = searchParams.get('redirect') || '/dashboard';
+  //               router.push(redirectUrl);
+  //               router.refresh();
+  //             } catch (err: any) {
+  //               setError(err.message || "Google login failed. Please try again.");
+  //               setIsGoogleLoading(false);
+  //             }
+  //           },
+  //         });
 
-          // Render button
-          const buttonElement = document.getElementById("google-signin-button");
-          if (buttonElement) {
-            window.google.accounts.id.renderButton(buttonElement, {
-              theme: "outline",
-              size: "large",
-              width: "100%",
-              text: "signin_with",
-            });
-          }
-        }
-      };
-    }
-  }, [router]);
+  //         // Render button
+  //         const buttonElement = document.getElementById("google-signin-button");
+  //         if (buttonElement) {
+  //           window.google.accounts.id.renderButton(buttonElement, {
+  //             theme: "outline",
+  //             size: "large",
+  //             width: "100%",
+  //             text: "signin_with",
+  //           });
+  //         }
+  //       }
+  //     };
+  //   }
+  // }, []);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,10 +114,10 @@ export default function LoginPage() {
 
     try {
       await loginWithEmail({ email, password });
-      // Get redirect URL from query params or default to dashboard
-      const redirectUrl = searchParams.get('redirect') || '/dashboard';
+      // Fetch user data after successful login
+      await fetchUser();
+      const redirectUrl = searchParams.get("redirect") || "/dashboard";
       router.push(redirectUrl);
-      router.refresh();
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
@@ -148,8 +150,8 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="relative z-10">
-          <Logo size={50} className="mb-8" />
+        <div className="relative z-10" onClick={() => router.push("/")}>
+          <Logo size={50} className="mb-8 cursor-pointer" />
           <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
             Welcome back to{" "}
             <span className="gradient-text">Attendify</span>
@@ -290,14 +292,14 @@ export default function LoginPage() {
           </div>
 
           {/* Google Sign-In Button */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <div id="google-signin-button" className="w-full flex justify-center"></div>
             {!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
               <p className="text-xs text-muted-foreground text-center">
                 Google Sign-In requires NEXT_PUBLIC_GOOGLE_CLIENT_ID in your .env file
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* Sign up link */}
           <p className="mt-6 text-center text-sm text-muted-foreground">

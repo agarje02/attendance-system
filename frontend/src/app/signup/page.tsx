@@ -78,8 +78,10 @@ export default function SignupPage() {
           />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10" >
+          <div className=" mb-8 cursor-pointer" onClick={() => router.push("/")}>
           <Logo size={50} className="mb-8" />
+          </div>
           <h1 className="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
             Join{" "}
             <span className="gradient-text">Attendify</span>{" "}
@@ -121,7 +123,7 @@ export default function SignupPage() {
       >
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden mb-8">
+          <div className=" mb-8 cursor-pointer" onClick={() => router.push("/")}>
             <Logo size={40} />
           </div>
 

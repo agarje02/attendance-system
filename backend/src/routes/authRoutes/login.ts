@@ -28,16 +28,16 @@ const login = async (req: Request, res: Response) => {
         const refreshTokenExpiry = Number(process.env.COOKIE_REFRESH_TOKEN_EXPIRY) || 90 * 24 * 60 * 60 * 1000;
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.SAME_SITE as any || "none",
+            secure: true,
+            sameSite: process.env.SAME_SITE as any || "lax",
             maxAge: tokenExpiry, // 30 days
             path: '/',
         });
         
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.SAME_SITE as any || "none",
+            secure: true,
+            sameSite: process.env.SAME_SITE as any || "lax",
             maxAge: refreshTokenExpiry, // 90 days
             path: '/',
         });

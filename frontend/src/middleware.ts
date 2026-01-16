@@ -2,10 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Public routes that don't require authentication
+// These routes are accessible to both authenticated and unauthenticated users
 const publicRoutes = ['/', '/login', '/signup'];
-
-// Auth routes that require authentication
-const authRoutes = ['/dashboard'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -15,24 +13,20 @@ export function middleware(request: NextRequest) {
     pathname === route || pathname.startsWith(route + '/')
   );
   
-  // Check if the route requires authentication
-  const isAuthRoute = authRoutes.some(route => 
-    pathname === route || pathname.startsWith(route + '/')
-  );
-  
   // Get token from cookies
   const token = request.cookies.get('token')?.value;
   const isAuthenticated = !!token;
   
-  // If user is authenticated and trying to access public auth pages (login/signup)
-  // redirect them to dashboard
-  if (isAuthenticated && (pathname === '/login' || pathname === '/signup')) {
+  // If user is authenticated and trying to access login/signup pages
+  // redirect them to dashboard (but allow '/' for both authenticated and unauthenticated)
+ 
+  if (isAuthenticated && isPublicRoute) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   
-  // If user is not authenticated and trying to access protected routes
-  // redirect them to login
-  if (!isAuthenticated && isAuthRoute) {
+  // If user is not authenticated and trying to access a private route
+  // redirect them to login with redirect parameter
+  if (!isAuthenticated && !isPublicRoute) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);

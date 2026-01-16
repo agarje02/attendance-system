@@ -43,16 +43,12 @@ export async function logout(): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    // Call logout API endpoint (optional, will fail gracefully if it doesn't exist)
+    // Call logout API endpoint to clear httpOnly cookies on the server
     await apiLogout();
   } catch (error) {
-    // Ignore errors - we'll still clear cookies client-side
+    // Ignore errors - backend should still clear cookies
+    console.error(error);
   }
   
-  // Clear all cookies
-  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  
-  // Redirect to home page
-  window.location.href = '/';
+
 }

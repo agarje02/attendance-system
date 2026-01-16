@@ -43,16 +43,16 @@ const refresh = async (req: Request, res: Response) => {
         // Set cookies
         res.cookie('token', newToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.SAME_SITE as any || "none",
+            secure: true,
+            sameSite: process.env.SAME_SITE as any || "lax",
             maxAge: tokenExpiry, // 30 days
             path: '/',
         });
 
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.SAME_SITE as any || "none",
+            secure: true,
+            sameSite: process.env.SAME_SITE as any || "lax",
             maxAge: refreshTokenExpiry, // 90 days
             path: '/',
         });

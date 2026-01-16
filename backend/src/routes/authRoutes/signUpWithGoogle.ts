@@ -39,7 +39,7 @@ const signUpWithGoogle = async (req: Request, res: Response) => {
         // Set cookies
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
             path: '/',
@@ -47,7 +47,7 @@ const signUpWithGoogle = async (req: Request, res: Response) => {
         
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
             path: '/',

@@ -3,15 +3,16 @@ import { sendSuccessResponse } from "../../utils/errorResponse";
 
 const logout = async (req: Request, res: Response) => {
     try {
-        // Clear cookies with the same options used when setting them
+        // Clear cookies by setting them with maxAge: 0
+        // This is more reliable than clearCookie, especially for sameSite: "none" cookies
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: (process.env.SAME_SITE as any) || "none",
+            secure: true,
+            sameSite: (process.env.SAME_SITE as any) || "lax",
             path: '/',
+            maxAge: 0, // Immediately expire the cookie
         };
-
-        res.clearCookie('token', cookieOptions);
+        res.clearCookie('token',  cookieOptions);
         res.clearCookie('refreshToken', cookieOptions);
 
         return sendSuccessResponse(res, { message: "Logged out successfully" });
@@ -19,9 +20,10 @@ const logout = async (req: Request, res: Response) => {
         // Even if there's an error, try to clear cookies
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: (process.env.SAME_SITE as any) || "none",
+            secure: true,
+            sameSite: (process.env.SAME_SITE as any) || "lax",
             path: '/',
+            maxAge: 0, // Immediately expire the cookie
         };
 
         res.clearCookie('token', cookieOptions);

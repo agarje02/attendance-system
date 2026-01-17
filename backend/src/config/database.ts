@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 // Load environment variables BEFORE importing PrismaClient
 dotenv.config();
-
+//@ts-ignore
 import { PrismaClient } from '../generated/prisma/client';
 import { Pool } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";

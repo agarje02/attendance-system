@@ -3,6 +3,7 @@ import { prisma } from "../../config/database";
 import { sendErrorResponse, sendSuccessResponse } from "../../utils/errorResponse";
 
 type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+type ClassSession = Awaited<ReturnType<typeof prisma.classSession.findMany>>[number];
 
 const getMyAttendanceByClassId = async (req: Request, res: Response) => {
     try {
@@ -34,7 +35,7 @@ const getMyAttendanceByClassId = async (req: Request, res: Response) => {
         });
 
         // Aggregate attendance for all managed student users
-        const attendanceRecords = sessions.map(session => {
+        const attendanceRecords = sessions.map((session: ClassSession) => {
             const attendance = session.attendance as Record<string, string> | null;
             const studentAttendance: Record<string, string> = {};
 

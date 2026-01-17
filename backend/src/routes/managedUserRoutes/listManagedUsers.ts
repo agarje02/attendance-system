@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/database";
 import { sendSuccessResponse, sendErrorResponse } from "../../utils/errorResponse";
+import { Prisma } from "../../generated/prisma/client";
+import { ManagedUserRole } from "../../generated/prisma/enums";
 
 const listManagedUsers = async (req: Request, res: Response) => {
     try {
@@ -9,7 +11,7 @@ const listManagedUsers = async (req: Request, res: Response) => {
         const { departmentId, role } = req.query;
 
         // Build where clause
-        const where: any = {
+        const where: Prisma.ManagedUserWhereInput = {
             ownerId: userId,
         };
 
@@ -40,7 +42,7 @@ const listManagedUsers = async (req: Request, res: Response) => {
 
         // Filter by role if provided
         if (role) {
-            where.role = role as string;
+            where.role = role as ManagedUserRole;
         }
 
         // Get all managed users for the authenticated user

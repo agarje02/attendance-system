@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/database";
 import { sendSuccessResponse, sendErrorResponse, sendNotFoundClassError, sendForbiddenOwnershipError } from "../../utils/errorResponse";
+import { Prisma } from "../../generated/prisma/client";
+import { ClassMemberRole, ClassMemberStatus } from "../../generated/prisma/enums";
 
 type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
 
@@ -52,7 +54,7 @@ const listClassMembers = async (req: Request, res: Response) => {
         }
 
         // Build where clause
-        const where: any = {
+        const where: Prisma.ClassMemberWhereInput = {
             classId: classId as string,
         };
 
@@ -61,7 +63,7 @@ const listClassMembers = async (req: Request, res: Response) => {
             if (role !== 'teacher' && role !== 'student') {
                 return sendErrorResponse(res, "Invalid role. Must be 'teacher' or 'student'", 400);
             }
-            where.role = role as string;
+            where.role = role as ClassMemberRole;
         }
 
         // Filter by status if provided
@@ -69,7 +71,7 @@ const listClassMembers = async (req: Request, res: Response) => {
             if (status !== 'pending' && status !== 'approved') {
                 return sendErrorResponse(res, "Invalid status. Must be 'pending' or 'approved'", 400);
             }
-            where.status = status as string;
+            where.status = status as ClassMemberStatus;
         }
 
         // Get all class members

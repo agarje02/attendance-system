@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { sendErrorResponse, sendSuccessResponse, sendNotFoundClassError, sendForbiddenOwnershipError } from "../../utils/errorResponse";
 import { prisma } from "../../config/database";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 /**
  * Remove a class member from a class
  * DELETE /class-members/:classId/:userId
@@ -45,7 +47,7 @@ const removeClassMember = async (req: Request, res: Response) => {
                 role: 'teacher'
             }
         });
-        const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+        const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
         
         // Check if any of the user's managed teachers are approved teacher members of this class
         const teacherMembership = await prisma.classMember.findFirst({

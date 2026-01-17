@@ -7,6 +7,8 @@ import {
 } from "../../utils/errorResponse";
 import { getLiveSession } from "../../utils/sessionRedis";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 const getSession = async (req: Request, res: Response) => {
   try {
     // @ts-ignore - user is set by auth middleware
@@ -29,7 +31,7 @@ const getSession = async (req: Request, res: Response) => {
             role: 'teacher'
           }
         });
-        const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+        const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
         const isTeacherMember = liveSession.teacherId && managedTeacherIds.includes(liveSession.teacherId);
 
         if (!isTeacherMember) {

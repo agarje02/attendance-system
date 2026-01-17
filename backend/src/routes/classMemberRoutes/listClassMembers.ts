@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../../config/database";
 import { sendSuccessResponse, sendErrorResponse, sendNotFoundClassError, sendForbiddenOwnershipError } from "../../utils/errorResponse";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 /**
  * List class members with optional filters
  * GET /class-members?classId=:classId&role=:role&status=:status
@@ -33,7 +35,7 @@ const listClassMembers = async (req: Request, res: Response) => {
         const userManagedUsers = await prisma.managedUser.findMany({
             where: { ownerId: userId }
         });
-        const managedUserIds = userManagedUsers.map(mu => mu.id);
+        const managedUserIds = userManagedUsers.map((mu: ManagedUser) => mu.id);
         
         const userMembership = await prisma.classMember.findFirst({
             where: {

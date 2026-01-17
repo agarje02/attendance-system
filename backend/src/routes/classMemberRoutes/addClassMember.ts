@@ -4,6 +4,8 @@ import { classMemberCreateSchema } from "../../schemas/classMemberSchema";
 import { sendValidationError, sendErrorResponse, sendSuccessResponse, sendNotFoundClassError, sendForbiddenOwnershipError } from "../../utils/errorResponse";
 import { prisma } from "../../config/database";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 /**
  * Add a class member (Owner or Teacher can add directly - status: approved)
  * POST /class-members
@@ -40,7 +42,7 @@ const addClassMember = async (req: Request, res: Response) => {
                 role: 'teacher'
             }
         });
-        const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+        const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
         
         // Check if any of the user's managed teachers are approved teacher members of this class
         const teacherMembership = await prisma.classMember.findFirst({

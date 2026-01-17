@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../../config/database";
 import { sendErrorResponse, sendSuccessResponse } from "../../utils/errorResponse";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 const getMyAttendanceByClassId = async (req: Request, res: Response) => {
     try {
         const { id: classId } = req.params;
@@ -36,7 +38,7 @@ const getMyAttendanceByClassId = async (req: Request, res: Response) => {
             const attendance = session.attendance as Record<string, string> | null;
             const studentAttendance: Record<string, string> = {};
 
-            managedUsers.forEach(managedUser => {
+            managedUsers.forEach((managedUser: ManagedUser) => {
                 if (attendance && attendance[managedUser.id]) {
                     studentAttendance[managedUser.id] = attendance[managedUser.id];
                 }
@@ -53,7 +55,7 @@ const getMyAttendanceByClassId = async (req: Request, res: Response) => {
 
         return sendSuccessResponse(res, {
             classId,
-            managedUsers: managedUsers.map(mu => ({
+            managedUsers: managedUsers.map((mu: ManagedUser) => ({
                 id: mu.id,
                 username: mu.username,
             })),

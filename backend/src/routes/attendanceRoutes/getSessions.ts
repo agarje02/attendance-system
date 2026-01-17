@@ -7,6 +7,8 @@ import {
   sendErrorResponse,
 } from "../../utils/errorResponse";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 const getSessions = async (req: Request, res: Response) => {
   try {
     // @ts-ignore - user is set by auth middleware
@@ -48,7 +50,7 @@ const getSessions = async (req: Request, res: Response) => {
           role: 'teacher'
         }
       });
-      const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+      const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
 
       // Build access conditions
       const accessConditions: any[] = [
@@ -78,7 +80,7 @@ const getSessions = async (req: Request, res: Response) => {
           },
           select: { id: true }
         });
-        const accessibleClassIds = userClasses.map(c => c.id);
+        const accessibleClassIds = userClasses.map((c: { id: string }) => c.id);
         
         if (accessibleClassIds.length > 0) {
           accessConditions.push({ classId: { in: accessibleClassIds } });

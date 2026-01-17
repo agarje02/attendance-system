@@ -4,6 +4,8 @@ import { prisma } from "../../config/database";
 import { startAttendanceSchema } from "../../schemas/attendanceSchema";
 import { sendValidationError, sendNotFoundClassError, sendForbiddenOwnershipError, sendSuccessResponse, sendErrorResponse } from "../../utils/errorResponse";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 const startAttendance = async (req: Request, res: Response) => {
   try {
     // @ts-ignore - user is set by auth middleware
@@ -47,9 +49,9 @@ const startAttendance = async (req: Request, res: Response) => {
         role: 'teacher'
       }
     });
-    const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+    const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
     const isTeacherMember = classData.members.some(
-      member => managedTeacherIds.includes(member.userId)
+      (member: typeof classData.members[number]) => managedTeacherIds.includes(member.userId)
     );
 
     if (!isOwner && !isTeacherMember) {
@@ -62,7 +64,7 @@ const startAttendance = async (req: Request, res: Response) => {
         classId,
         scheduledTime: new Date(),
         startTime: new Date(),
-        teacherId: isTeacherMember ? classData.members.find(m => managedTeacherIds.includes(m.userId))?.userId : null,
+        teacherId: isTeacherMember ? classData.members.find((m: typeof classData.members[number]) => managedTeacherIds.includes(m.userId))?.userId : null,
         ownerTeacherId: isOwner ? currentUserId : null,
         attendance: {},
         isFinalized: false,

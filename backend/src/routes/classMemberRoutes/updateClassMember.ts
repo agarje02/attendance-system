@@ -4,6 +4,8 @@ import { classMemberUpdateSchema } from "../../schemas/classMemberSchema";
 import { sendValidationError, sendErrorResponse, sendSuccessResponse, sendNotFoundClassError, sendForbiddenOwnershipError } from "../../utils/errorResponse";
 import { prisma } from "../../config/database";
 
+type ManagedUser = Awaited<ReturnType<typeof prisma.managedUser.findMany>>[number];
+
 /**
  * Update a class member (approve/reject request or update role)
  * PUT /class-members/:classId/:userId
@@ -55,7 +57,7 @@ const updateClassMember = async (req: Request, res: Response) => {
                 role: 'teacher'
             }
         });
-        const managedTeacherIds = userManagedTeachers.map(mu => mu.id);
+        const managedTeacherIds = userManagedTeachers.map((mu: ManagedUser) => mu.id);
         
         // Check if any of the user's managed teachers are approved teacher members of this class
         const teacherMembership = await prisma.classMember.findFirst({

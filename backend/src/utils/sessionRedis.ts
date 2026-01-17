@@ -9,7 +9,7 @@ const SESSION_ATTENDANCE_PREFIX = 'session:attendance:';
 export const getLiveSession = async (sessionId: string): Promise<any | null> => {
     try {
         const sessionData = await redis.get(`${SESSION_PREFIX}${sessionId}`);
-        return sessionData ? JSON.parse(sessionData) : null;
+        return sessionData && typeof sessionData === 'string' ? JSON.parse(sessionData) : null;
     } catch (error) {
         console.error('Error getting live session from Redis:', error);
         return null;
@@ -34,7 +34,7 @@ export const setLiveSession = async (sessionId: string, sessionData: any, ttl: n
 export const getLiveSessionAttendance = async (sessionId: string): Promise<Record<string, string> | null> => {
     try {
         const attendanceData = await redis.get(`${SESSION_ATTENDANCE_PREFIX}${sessionId}`);
-        return attendanceData ? JSON.parse(attendanceData) : null;
+        return attendanceData && typeof attendanceData === 'string' ? JSON.parse(attendanceData) : null;
     } catch (error) {
         console.error('Error getting live session attendance from Redis:', error);
         return null;

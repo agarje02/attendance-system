@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use((_req, res, next) => {
   // CORS configuration
   const origin = _req.headers.origin;
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['https://attendance-system-six-nu.vercel.app'];
   
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);

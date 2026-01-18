@@ -23,6 +23,7 @@ import type {
   SessionAttendance,
   ApiResponse,
 } from '@/types';
+import { setCookie, removeCookie } from './cookies';
 export * from '@/types';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -58,6 +59,16 @@ export interface GoogleAuthResponse {
 export interface AuthResponse {
   token: string;
   refreshToken?: string;
+  user?: {
+    id: string;
+    email: string;
+    fullName: string;
+  };
+}
+
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
 }
 
 // Helper function for API calls
@@ -104,7 +115,7 @@ export async function signup(credentials: SignupCredentials): Promise<SignupResp
   return data;
 }
 
-export async function loginWithEmail(credentials: LoginCredentials): Promise<void> {
+export async function loginWithEmail(credentials: LoginCredentials): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {
@@ -119,11 +130,30 @@ export async function loginWithEmail(credentials: LoginCredentials): Promise<voi
     throw new Error(error.error || error.message || 'Login failed');
   }
 
-  const data = await response.json();
+  const result = await response.json();
+  const data: AuthResponse = result.success ? result.data : result;
+
+  // Store tokens in cookies if available
+  if (data.token) {
+    setCookie('token', data.token, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      secure: true,
+      sameSite: 'lax',
+    });
+  }
+
+  if (data.refreshToken) {
+    setCookie('refreshToken', data.refreshToken, {
+      maxAge: 90 * 24 * 60 * 60, // 90 days
+      secure: true,
+      sameSite: 'lax',
+    });
+  }
+
   return data;
 }
 
-export async function loginWithGoogle(googleData: GoogleAuthResponse): Promise<void> {
+export async function loginWithGoogle(googleData: GoogleAuthResponse): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/signup-with-google`, {
     method: 'POST',
     headers: {
@@ -138,7 +168,26 @@ export async function loginWithGoogle(googleData: GoogleAuthResponse): Promise<v
     throw new Error(error.error || error.message || 'Google login failed');
   }
 
-  const data = await response.json();
+  const result = await response.json();
+  const data: AuthResponse = result.success ? result.data : result;
+
+  // Store tokens in cookies if available
+  if (data.token) {
+    setCookie('token', data.token, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      secure: true,
+      sameSite: 'lax',
+    });
+  }
+
+  if (data.refreshToken) {
+    setCookie('refreshToken', data.refreshToken, {
+      maxAge: 90 * 24 * 60 * 60, // 90 days
+      secure: true,
+      sameSite: 'lax',
+    });
+  }
+
   return data;
 }
 
@@ -155,6 +204,43 @@ export async function getCurrentUser(): Promise<any> {
   return response.json();
 }
 
+export async function refreshToken(): Promise<RefreshTokenResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Important for cookies
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || error.message || 'Token refresh failed');
+  }
+
+  const result = await response.json();
+  const data: RefreshTokenResponse = result.success ? result.data : result;
+
+  // Store new tokens in cookies
+  if (data.token) {
+    setCookie('token', data.token, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+  }
+
+  if (data.refreshToken) {
+    setCookie('refreshToken', data.refreshToken, {
+      maxAge: 90 * 24 * 60 * 60, // 90 days
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+  }
+
+  return data;
+}
+
 export async function logout(): Promise<void> {
   try {
     // Call logout endpoint if it exists (optional)
@@ -166,6 +252,10 @@ export async function logout(): Promise<void> {
     // Ignore errors if logout endpoint doesn't exist
     // Cookies will be cleared on the client side
   }
+  
+  // Clear cookies on client side
+  removeCookie('token');
+  removeCookie('refreshToken');
 }
 
 // ==================== School API ====================

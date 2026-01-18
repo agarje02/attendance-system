@@ -11,8 +11,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 const app = express();
 app.use(express.json());
+const allowedOrigins = JSON.parse((process.env.ALLOWED_ORIGINS || "['http://localhost:3000']").replace(/'/g, '"'));
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000',],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(cookieParser());

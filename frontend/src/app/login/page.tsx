@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { loginWithEmail, loginWithGoogle } from "@/lib/api";
 import { Logo } from "@/components/Logo";
@@ -120,6 +120,31 @@ export default function LoginPage() {
       router.push(redirectUrl);
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL;
+    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+
+    if (!demoEmail || !demoPassword) {
+      setError("Demo credentials are not configured. Please contact administrator.");
+      return;
+    }
+
+    setError("");
+    setIsLoading(true);
+
+    try {
+      await loginWithEmail({ email: demoEmail, password: demoPassword });
+      // Fetch user data after successful login
+      await fetchUser();
+      const redirectUrl = searchParams.get("redirect") || "/dashboard";
+      router.push(redirectUrl);
+    } catch (err: any) {
+      setError(err.message || "Demo login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -279,6 +304,29 @@ export default function LoginPage() {
             </Button>
           </form>
 
+          {/* Demo Login Button */}
+          {process.env.NEXT_PUBLIC_DEMO_EMAIL && process.env.NEXT_PUBLIC_DEMO_PASSWORD && (
+            <div className="mb-6">
+              <Button
+                type="button"
+                onClick={handleDemoLogin}
+                className="w-full"
+                size="lg"
+                variant="outline"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  "Signing in..."
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 w-5 h-5" />
+                    Login with Demo Account
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
@@ -310,6 +358,18 @@ export default function LoginPage() {
             >
               Sign up
             </Link>
+            {process.env.NEXT_PUBLIC_DEMO_EMAIL && process.env.NEXT_PUBLIC_DEMO_PASSWORD && (
+              <>
+                {" "}•{" "}
+                <button
+                  onClick={handleDemoLogin}
+                  disabled={isLoading}
+                  className="text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Try Demo
+                </button>
+              </>
+            )}
           </p>
         </div>
       </motion.div>

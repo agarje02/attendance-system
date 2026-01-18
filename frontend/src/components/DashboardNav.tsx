@@ -13,9 +13,6 @@ import { useUserStore } from "@/store/userStore";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/schools", label: "Schools", icon: School },
-  { href: "/departments", label: "Departments", icon: Building2 },
-  { href: "/managed-users", label: "Users", icon: Users },
   { href: "/classes", label: "Classes", icon: BookOpen },
   { href: "/attendance", label: "Attendance", icon: Calendar },
 ];

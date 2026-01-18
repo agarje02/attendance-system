@@ -7,7 +7,7 @@ const me = async (req: Request, res: Response) => {
         // @ts-ignore
         const email = req.user.email;
         console.log({email},'email');
-        const user = await prisma.user.findUnique({ where: { email },omit: { passwordHash: true } });
+        const user = await prisma.user.findUnique({ where: { email: email ?? '' },omit: { passwordHash: true } });
         return sendSuccessResponse(res, user);
   } catch (error) {
     console.log(error,'error in me');
